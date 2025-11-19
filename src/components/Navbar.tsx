@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       <header 
-        className={`fixed top-0 left-0 right-0 z-50 px-5 md:px-10 py-4 transition-all duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 right-0 z-50 px-5 md:px-10 py-4 transition-all  text-secondary duration-300 ease-in-out ${
           isScrolled ? 'md:bg-white/30 md:backdrop-blur-lg dark:bg-black/30 dark:backdrop-blur-lg bg-white/80 shadow-sm' : 'bg-transparent'
         }`}
       >
@@ -57,9 +57,11 @@ const Navbar: React.FC = () => {
               <img 
                 src="/lovable-uploads/499b3589-d0d9-48f7-80dd-6ce910174b88.png"
                 alt="E-Cell Logo" 
-                className="h-12 w-auto" 
+                className="h-20 w-auto" 
               />
             </a>
+
+            <p>X</p>
             
             {/* SCSIT Logo */}
             <a 
@@ -71,7 +73,7 @@ const Navbar: React.FC = () => {
               <img 
                 src="/lovable-uploads/0f47e3fe-e528-4ba8-8eb0-e8ee09167a92.png"
                 alt="SCSIT Logo" 
-                className="h-12 w-auto" 
+                className="h-14 w-auto rounded-full" 
               />
             </a>
           </div>
@@ -80,46 +82,46 @@ const Navbar: React.FC = () => {
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               to="/#about"
-              className="text-sm font-medium hover:text-black/70 dark:hover:text-white/70 transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
+              className="text-sm font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
             >
               About
             </Link>
             <Link
               to="/#initiatives"
-              className="text-sm font-medium hover:text-black/70 dark:hover:text-white/70 transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
+              className="text-sm font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
             >
               Initiatives
             </Link>
             <Link
               to="/gallery"
-              className="text-sm font-medium hover:text-black/70 dark:hover:text-white/70 transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
+              className="text-sm font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
             >
               Gallery
             </Link>
             <Link
               to="/blog"
-              className="text-sm font-medium hover:text-black/70 dark:hover:text-white/70 transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
+              className="text-sm font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
             >
-              Blog
+              Blogs
             </Link>
             <Link
               to="/team"
-              className="text-sm font-medium hover:text-black/70 dark:hover:text-white/70 transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
+              className="text-sm font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
             >
               Team
             </Link>
             <Link
               to="/#contact"
-              className="text-sm font-medium hover:text-black/70 dark:hover:text-white/70 transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
+              className="text-sm font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-black dark:after:bg-white after:transition-all hover:after:w-full"
             >
               Contact
             </Link>
-            <Link
+            {/* <Link
               to="/admin"
               className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
             >
               Admin
-            </Link>
+            </Link> */}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -160,53 +162,53 @@ const Navbar: React.FC = () => {
             <nav className="flex flex-col items-center space-y-8">
               <Link
                 to="/#about"
-                className="text-2xl font-medium text-black dark:text-white hover:text-black/70 dark:hover:text-white/70 transition-colors"
+                className="text-2xl font-medium transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About
               </Link>
               <Link
                 to="/#initiatives"
-                className="text-2xl font-medium text-black dark:text-white hover:text-black/70 dark:hover:text-white/70 transition-colors"
+                className="text-2xl font-medium transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Initiatives
               </Link>
               <Link
                 to="/gallery"
-                className="text-2xl font-medium text-black dark:text-white hover:text-black/70 dark:hover:text-white/70 transition-colors"
+                className="text-2xl font-medium transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Gallery
               </Link>
               <Link
                 to="/blog"
-                className="text-2xl font-medium text-black dark:text-white hover:text-black/70 dark:hover:text-white/70 transition-colors"
+                className="text-2xl font-medium transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Blog
+                Blogs
               </Link>
               <Link
                 to="/team"
-                className="text-2xl font-medium text-black dark:text-white hover:text-black/70 dark:hover:text-white/70 transition-colors"
+                className="text-2xl font-medium transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Team
               </Link>
               <Link
                 to="/#contact"
-                className="text-2xl font-medium text-black dark:text-white hover:text-black/70 dark:hover:text-white/70 transition-colors"
+                className="text-2xl font-medium transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Contact
               </Link>
-              <Link
+              {/* <Link
                 to="/admin"
-                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                className="px-4 py-2 bg-primary text-red-500 rounded-md hover:bg-primary/90 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Admin
-              </Link>
+              </Link> */}
             </nav>
           </motion.div>
         )}

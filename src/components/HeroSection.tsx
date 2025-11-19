@@ -127,7 +127,7 @@ const HeroSection: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Scroll Down Animation - Changed from fixed to absolute positioning */}
+      {/* {/* Scroll Down Animation - Changed from fixed to absolute positioning *
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -148,7 +148,7 @@ const HeroSection: React.FC = () => {
             />
           </motion.div>
         </div>
-      </motion.div>
+      </motion.div> */}
     </section>
   );
 };

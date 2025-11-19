@@ -56,7 +56,7 @@ const AdminPanel: React.FC = () => {
   return (
     <div className="min-h-screen bg-background tech-gradient">
       {showNav && (
-        <nav className="bg-primary text-primary-foreground p-4">
+        <nav className="bg-foreground text-primary-foreground p-4">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Link to="/" className="text-xl font-bold">
@@ -105,7 +105,7 @@ const AdminPanel: React.FC = () => {
             
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
+              className="px-4 py-2 bg-destructive hover:bg-destructive/80 rounded-md transition-colors"
             >
               Logout
             </button>

@@ -21,13 +21,13 @@ const LoadingScreen: React.FC = () => {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-black"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black dark:bg-black"
     >
       <div className="flex flex-col items-center">
         <motion.img
           src="/lovable-uploads/499b3589-d0d9-48f7-80dd-6ce910174b88.png"
           alt="E-Cell Logo"
-          className="w-32 h-32 mb-4"
+          className="w-32 h-54 mb-4"
           animate={{ scale: [0.9, 1.1, 1] }}
           transition={{
             duration: 1.5,
@@ -36,7 +36,7 @@ const LoadingScreen: React.FC = () => {
           }}
         />
         <motion.div
-          className="h-1 bg-primary rounded-full mt-4"
+          className="h-1 bg-white rounded-full mt-4"
           initial={{ width: 0 }}
           animate={{ width: "200px" }}
           transition={{ duration: 2, repeat: 1, repeatType: "reverse" }}

@@ -12,6 +12,8 @@ import NotFound from "./pages/NotFound";
 import Team from './pages/Team';
 import Gallery from './pages/Gallery';
 import Blog from './pages/Blog';
+import Announcements from "./pages/Announcements";
+import ScrollToHash from "./components/ScrolltoHash";
 
 // Create the query client outside of the component
 const queryClient = new QueryClient();
@@ -25,12 +27,14 @@ function App() {
           hideDefaultCursor={true}
         />
         <Router>
+          <ScrollToHash />
           <div className="App">
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/team" element={<Team />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/announcements" element={<Announcements />} />
               <Route path="/admin/*" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

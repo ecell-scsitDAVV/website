@@ -1,12 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
+import { Linkedin, Instagram, Twitter, ExternalLink, User } from 'lucide-react';
 
 export interface ChromaItem {
   image: string;
   title: string;
   subtitle: string;
-  handle?: string;
-  location?: string;
   borderColor?: string;
   gradient?: string;
   url?: string;
@@ -24,17 +23,19 @@ export interface ChromaGridProps {
   damping?: number;
   fadeOut?: number;
   ease?: string;
+  imageComponent?: React.FC<{ src: string; alt: string }>;
 }
 
 type SetterFn = (v: number | string) => void;
 
 const ChromaGrid: React.FC<ChromaGridProps> = ({
-  items,
+  items = [],
   className = '',
-  radius = 300,
-  damping = 0.45,
-  fadeOut = 0.6,
-  ease = 'power3.out'
+  radius = 320,
+  damping = 0.5,
+  fadeOut = 0.7,
+  ease = 'power3.out',
+  imageComponent: CustomImage,
 }) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const fadeRef = useRef<HTMLDivElement>(null);
@@ -42,75 +43,70 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
   const setY = useRef<SetterFn | null>(null);
   const pos = useRef({ x: 0, y: 0 });
 
-  const demo: ChromaItem[] = [
-    {
-      image: 'https://i.pravatar.cc/300?img=8',
-      title: 'Alex Rivera',
-      subtitle: 'Full Stack Developer',
-      handle: '@alexrivera',
-      borderColor: '#4F46E5',
-      gradient: 'linear-gradient(145deg,#4F46E5,#000)',
-      url: 'https://github.com/'
-    },
-    {
-      image: 'https://i.pravatar.cc/300?img=11',
-      title: 'Jordan Chen',
-      subtitle: 'DevOps Engineer',
-      handle: '@jordanchen',
-      borderColor: '#10B981',
-      gradient: 'linear-gradient(210deg,#10B981,#000)',
-      url: 'https://linkedin.com/in/'
-    },
-    {
-      image: 'https://i.pravatar.cc/300?img=3',
-      title: 'Morgan Blake',
-      subtitle: 'UI/UX Designer',
-      handle: '@morganblake',
-      borderColor: '#F59E0B',
-      gradient: 'linear-gradient(165deg,#F59E0B,#000)',
-      url: 'https://dribbble.com/'
-    },
-    {
-      image: 'https://i.pravatar.cc/300?img=16',
-      title: 'Casey Park',
-      subtitle: 'Data Scientist',
-      handle: '@caseypark',
-      borderColor: '#EF4444',
-      gradient: 'linear-gradient(195deg,#EF4444,#000)',
-      url: 'https://kaggle.com/'
-    },
-    {
-      image: 'https://i.pravatar.cc/300?img=25',
-      title: 'Sam Kim',
-      subtitle: 'Mobile Developer',
-      handle: '@thesamkim',
-      borderColor: '#8B5CF6',
-      gradient: 'linear-gradient(225deg,#8B5CF6,#000)',
-      url: 'https://github.com/'
-    },
-    {
-      image: 'https://i.pravatar.cc/300?img=60',
-      title: 'Tyler Rodriguez',
-      subtitle: 'Cloud Architect',
-      handle: '@tylerrod',
-      borderColor: '#06B6D4',
-      gradient: 'linear-gradient(135deg,#06B6D4,#000)',
-      url: 'https://aws.amazon.com/'
-    }
-  ];
+  const hasItems = items && items.length > 0;
+  const data = hasItems ? items : [];
 
-  const data = items?.length ? items : demo;
+const prioritizedRoles = [
+  'President',
+  'Vice-President',
+  'Technical Head',
+  'Event Head',
+  'Marketing Head',
+  'Human Resource',
+  'Graphic Designer',
+  'Event Finance Manager',
+  'PR Manager',
+  'Business Planner',
+  'Buisness Planner',
+  'Full Stack Developer',
+  'Content Designer',
+  'Content Creator',
+  'Content Writer',
+  'Coordinator',
+  'Co-ordinator',
+  'Volunteer',
+] as const;
+
+const getPriority = (subtitle: string): number => {
+  const lower = subtitle.trim().toLowerCase();
+
+  if (lower.includes('president') && !lower.includes('vice-president') && !lower.includes('vice president')) {
+    return 0;
+  }
+
+  // Then check all other roles in strict order
+  for (let i = 1; i < prioritizedRoles.length; i++) {
+    if (lower.includes(prioritizedRoles[i].toLowerCase())) {
+      return i;
+    }
+  }
+
+  return 999;
+};
+
+const sortedData = [...data].sort((a, b) => {
+  const priorityA = getPriority(a.subtitle);
+  const priorityB = getPriority(b.subtitle);
+  return priorityA - priorityB;
+});
 
   useEffect(() => {
+    if (!rootRef.current) return;
     const el = rootRef.current;
-    if (!el) return;
     setX.current = gsap.quickSetter(el, '--x', 'px') as SetterFn;
-    setY.current = gsap.quickSetter(el, '--y', 'px') as SetterFn;
-    const { width, height } = el.getBoundingClientRect();
-    pos.current = { x: width / 2, y: height / 2 };
-    setX.current(pos.current.x);
-    setY.current(pos.current.y);
-  }, []);
+    setY.current = gsap.quickSetter(el, '--y', 'px') as SetterFn; // ← fixed typo
+
+    const updateCenter = () => {
+      const { width, height } = el.getBoundingClientRect();
+      pos.current = { x: width / 2, y: height / 2 };
+      setX.current?.(pos.current.x);
+      setY.current?.(pos.current.y);
+    };
+
+    updateCenter();
+    window.addEventListener('resize', updateCenter);
+    return () => window.removeEventListener('resize', updateCenter);
+  }, [hasItems]);
 
   const moveTo = (x: number, y: number) => {
     gsap.to(pos.current, {
@@ -122,120 +118,194 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
         setX.current?.(pos.current.x);
         setY.current?.(pos.current.y);
       },
-      overwrite: true
+      overwrite: true,
     });
   };
 
-  const handleMove = (e: React.PointerEvent) => {
+  const handleMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const r = rootRef.current!.getBoundingClientRect();
     moveTo(e.clientX - r.left, e.clientY - r.top);
-    gsap.to(fadeRef.current, { opacity: 0, duration: 0.25, overwrite: true });
+    gsap.to(fadeRef.current, { opacity: 0, duration: 0.3 });
   };
 
   const handleLeave = () => {
-    gsap.to(fadeRef.current, {
-      opacity: 1,
-      duration: fadeOut,
-      overwrite: true
-    });
+    gsap.to(fadeRef.current, { opacity: 1, duration: fadeOut });
   };
 
   const handleCardClick = (url?: string) => {
     if (url) window.open(url, '_blank', 'noopener,noreferrer');
   };
 
-  const handleCardMove: React.MouseEventHandler<HTMLElement> = e => {
-    const c = e.currentTarget as HTMLElement;
-    const rect = c.getBoundingClientRect();
-    c.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-    c.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+  const handleCardMove: React.MouseEventHandler<HTMLElement> = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+    card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
   };
+
+  const DefaultImage = ({ src, alt }: { src: string; alt: string }) => (
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      className="w-full h-96 object-cover object-top rounded-xl transition-transform duration-700 group-hover:scale-110"
+      onError={(e) => {
+        e.currentTarget.src = `https://via.placeholder.com/384x384/1a1a1a/ffffff?text=${alt.charAt(0)}`;
+      }}
+    />
+  );
+
+  const ImageComponent = CustomImage || DefaultImage;
+
+  const openSocial = (platform: string, handle?: string) => {
+    if (!handle) return;
+    const username = handle.replace(/^@/, '');
+    const urls: Record<string, string> = {
+      linkedin: `https://linkedin.com/in/${username}`,
+      instagram: `https://instagram.com/${username}`,
+      twitter: `https://x.com/${username}`,
+    };
+    window.open(urls[platform], '_blank', 'noopener,noreferrer');
+  };
+
+  const hasSocials = (handles?: ChromaItem['socialHandles']) =>
+    handles && (handles.linkedin || handles.instagram || handles.twitter);
+
+  if (!hasItems || data.length === 0) {
+    return (
+      <div className="text-center py-32 text-white/60">
+        <p className="text-2xl">No team members to display</p>
+      </div>
+    );
+  }
 
   return (
     <div
       ref={rootRef}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
-      className={`relative w-full h-full flex flex-wrap justify-center items-start gap-3 ${className}`}
-      style={
-        {
-          '--r': `${radius}px`,
-          '--x': '50%',
-          '--y': '50%'
-        } as React.CSSProperties
-      }
+      className={`relative w-full min-h-screen flex flex-wrap justify-center items-start gap-8 py-16 px-8 ${className}`}
+      style={{
+        '--r': `${radius}px`,
+        '--x': '50%',
+        '--y': '50%',
+      } as React.CSSProperties}
     >
-      {data.map((c, i) => (
-        <article
-          key={i}
-          onMouseMove={handleCardMove}
-          onClick={() => handleCardClick(c.url)}
-          className="group relative flex flex-col w-[300px] rounded-[20px] overflow-hidden border-2 border-transparent transition-colors duration-300 cursor-pointer"
-          style={
-            {
-              '--card-border': c.borderColor || 'transparent',
-              background: c.gradient,
-              '--spotlight-color': 'rgba(255,255,255,0.3)'
-            } as React.CSSProperties
-          }
-        >
-          <div
-            className="absolute inset-0 pointer-events-none transition-opacity duration-500 z-20 opacity-0 group-hover:opacity-100"
+      {sortedData.map((item, i) => {
+
+        return (
+          <article
+            key={i}
+            onClick={() => handleCardClick(item.url)}
+            onMouseMove={handleCardMove}
+            className="group relative w-96 rounded-3xl overflow-hidden border-2 border-transparent cursor-pointer transition-all duration-500 hover:border-white/30 shadow-2xl"
             style={{
-              background:
-                'radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 70%)'
-            }}
-          />
-          <div className="relative z-10 flex-1 p-[10px] box-border">
-            <img src={c.image} alt={c.title} loading="lazy" className="w-full h-full object-cover rounded-[10px]" />
-          </div>
-          <footer className="relative z-10 p-3 text-white font-sans">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="m-0 text-[1.05rem] font-semibold">{c.title}</h3>
-              {c.socialHandles?.linkedin && (
-                <span className="text-[0.8rem] opacity-80">
-                  {c.socialHandles.linkedin}
-                </span>
-              )}
+              background: item.gradient,
+              '--card-border': item.borderColor,
+              '--spotlight-color': 'rgba(255,255,255,0.26)',
+            } as React.CSSProperties}
+          >
+            {/* Spotlight Effect */}
+            <div
+              className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-20"
+              style={{
+                background:
+                  'radial-gradient(700px circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 40%)',
+              }}
+            />
+
+            {/* Image */}
+            <div className="relative z-10 p-4">
+              <ImageComponent src={item.image} alt={item.title} />
             </div>
-            <div className="flex justify-between items-end">
-              <p className="m-0 text-[0.85rem] opacity-85">{c.subtitle}</p>
-              <div className="flex flex-col items-end text-[0.8rem] opacity-75 space-y-1">
-                {c.socialHandles?.instagram && (
-                  <span>{c.socialHandles.instagram}</span>
-                )}
-                {c.socialHandles?.twitter && (
-                  <span>{c.socialHandles.twitter}</span>
+
+            {/* Content */}
+            <footer className="relative z-10 p-7 text-white">
+              <div className="flex justify-between items-start mb-5">
+                <h3 className="text-2xl font-bold tracking-tight">{item.title}</h3>
+                {item.url && (
+                  <ExternalLink className="w-5 h-5 opacity-50 group-hover:opacity-100 transition" />
                 )}
               </div>
-            </div>
-          </footer>
-        </article>
-      ))}
+
+              <p className="text-base opacity-90 mb-7 whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
+                {item.subtitle}
+              </p>
+
+              {/* Social Links or Dummy Icon */}
+              <div className="flex justify-center gap-5">
+                {hasSocials(item.socialHandles) ? (
+                  <>
+                    {item.socialHandles?.linkedin && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openSocial('linkedin', item.socialHandles!.linkedin);
+                        }}
+                        className="p-3.5 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all hover:scale-110 shadow-lg"
+                        aria-label={`LinkedIn - ${item.socialHandles!.linkedin}`}
+                      >
+                        <Linkedin className="w-6 h-6" />
+                      </button>
+                    )}
+                    {item.socialHandles?.instagram && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openSocial('instagram', item.socialHandles!.instagram);
+                        }}
+                        className="p-3.5 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all hover:scale-110 shadow-lg"
+                        aria-label={`Instagram - ${item.socialHandles!.instagram}`}
+                      >
+                        <Instagram className="w-6 h-6" />
+                      </button>
+                    )}
+                    {item.socialHandles?.twitter && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openSocial('twitter', item.socialHandles!.twitter);
+                        }}
+                        className="p-3.5 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all hover:scale-110 shadow-lg"
+                        aria-label={`X/Twitter - ${item.socialHandles!.twitter}`}
+                      >
+                        <Twitter className="w-6 h-6" />
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <div className="p-4 bg-white/5 rounded-full backdrop-blur-sm border border-white/10">
+                    <User className="w-6 h-6 text-white/40" />
+                  </div>
+                )}
+              </div>
+            </footer>
+          </article>
+        );
+      })}
+
+      {/* Darkening Overlay */}
       <div
-        className="absolute inset-0 pointer-events-none z-30"
+        className="fixed inset-0 pointer-events-none z-30"
         style={{
-          backdropFilter: 'grayscale(1) brightness(0.78)',
-          WebkitBackdropFilter: 'grayscale(1) brightness(0.78)',
           background: 'rgba(0,0,0,0.001)',
-          maskImage:
-            'radial-gradient(circle var(--r) at var(--x) var(--y),transparent 0%,transparent 15%,rgba(0,0,0,0.10) 30%,rgba(0,0,0,0.22)45%,rgba(0,0,0,0.35)60%,rgba(0,0,0,0.50)75%,rgba(0,0,0,0.68)88%,white 100%)',
-          WebkitMaskImage:
-            'radial-gradient(circle var(--r) at var(--x) var(--y),transparent 0%,transparent 15%,rgba(0,0,0,0.10) 30%,rgba(0,0,0,0.22)45%,rgba(0,0,0,0.35)60%,rgba(0,0,0,0.50)75%,rgba(0,0,0,0.68)88%,white 100%)'
+          maskImage: `radial-gradient(circle ${radius}px at var(--x) var(--y), transparent 0%, black 100%)`,
+          WebkitMaskImage: `radial-gradient(circle ${radius}px at var(--x) var(--y), transparent 0%, black 100%)`,
+          backdropFilter: 'grayscale(1) brightness(0.82)',
+          WebkitBackdropFilter: 'grayscale(1) brightness(0.82)',
         }}
       />
+
+      {/* Fade Layer */}
       <div
         ref={fadeRef}
-        className="absolute inset-0 pointer-events-none transition-opacity duration-[250ms] z-40"
+        className="fixed inset-0 pointer-events-none z-40 transition-opacity duration-700"
         style={{
-          backdropFilter: 'grayscale(1) brightness(0.78)',
-          WebkitBackdropFilter: 'grayscale(1) brightness(0.78)',
           background: 'rgba(0,0,0,0.001)',
-          maskImage:
-            'radial-gradient(circle var(--r) at var(--x) var(--y),white 0%,white 15%,rgba(255,255,255,0.90)30%,rgba(255,255,255,0.78)45%,rgba(255,255,255,0.65)60%,rgba(255,255,255,0.50)75%,rgba(255,255,255,0.32)88%,transparent 100%)',
-          WebkitMaskImage:
-            'radial-gradient(circle var(--r) at var(--x) var(--y),white 0%,white 15%,rgba(255,255,255,0.90)30%,rgba(255,255,255,0.78)45%,rgba(255,255,255,0.65)60%,rgba(255,255,255,0.50)75%,rgba(255,255,255,0.32)88%,transparent 100%)',
-          opacity: 1
+          maskImage: `radial-gradient(circle ${radius}px at var(--x) var(--y), white 0%, transparent 100%)`,
+          WebkitMaskImage: `radial-gradient(circle ${radius}px at var(--x) var(--y), white 0%, transparent 100%)`,
+          backdropFilter: 'grayscale(1) brightness(0.82)',
+          WebkitBackdropFilter: 'grayscale(1) brightness(0.82)',
         }}
       />
     </div>

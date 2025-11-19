@@ -1,78 +1,167 @@
 import React from 'react';
-import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { Instagram, Linkedin, Twitter } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
-  const handleScroll = (id: string) => (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const handleScroll = (id: string) => (
+    event: React.MouseEvent<HTMLAnchorElement>
+  ) => {
     event.preventDefault();
     const section = document.getElementById(id);
     if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+      section.scrollIntoView({ behavior: "smooth" });
     }
   };
 
+  const socialLinks = [
+    {
+      name: "twitter",
+      icon: <Twitter size={20} />,
+      color: "bg-[#1DA1F2]",
+      url: "https://x.com/ecell_scsit",
+    },
+    {
+      name: "instagram",
+      icon: <Instagram size={20} />,
+      color: "bg-[#E4405F]",
+      url: "https://www.instagram.com/ecell_scsit",
+    },
+    {
+      name: "linkedin",
+      icon: <Linkedin size={20} />,
+      color: "bg-[#0A66C2]",
+      url: "https://www.linkedin.com/company/ecell-scsit/",
+    },
+  ];
+
+  const quickLinks = [
+    { label: "About", id: "about" },
+    { label: "Team", id: "team" },
+    { label: "Events", id: "events" },
+    { label: "Initiatives", id: "initiatives" },
+    { label: "Contact", id: "contact" },
+  ];
+
   return (
-    <footer className="py-12 px-4 sm:px-6 border-t">
+    <footer className="py-12 px-4 sm:px-6 border-t bg-primary/10">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-cols-1 md:flex-cols-3 justify-between px-10 md:mr-16">
-          <div className="col-span-1">
-            <a href="#" className="text-2xl max-w-[70px] h-auto font-bold tracking-tighter mb-6 inline-block">
-              <img src="/images/Ecell_transparent_svg.png" alt="E-Cell Logo" />
+
+        {/* Top Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 px-6">
+
+          {/* Column 1 */}
+          <div>
+            <a
+              href="#"
+              className="inline-block mb-4 w-20 md:w-24 hover:opacity-90 transition"
+            >
+              <img
+                src="/images/Ecell_transparent_svg.png"
+                alt="E-Cell Logo"
+                className="w-full h-auto"
+              />
             </a>
-            <p className="text-muted-foreground font-bold text-3xl mb-4">
-              E-Cell, SCSIT
-            </p>
+
+            <p className="font-bold text-3xl text-primary mb-2">E-Cell, SCSIT</p>
+
             <p className="text-muted-foreground mb-6">
               Empowering students to innovate and lead through entrepreneurship.
             </p>
+
             <div className="flex space-x-4">
-              {[
-                { name: "twitter", icon: <Twitter size={20} />, color: "bg-[#1DA1F2]", url: "https://x.com/ecell_scsit" },
-                { name: "instagram", icon: <Instagram size={20} />, color: "bg-[#E4405F]", url: "https://www.instagram.com/ecell_scsit" },
-                { name: "linkedin", icon: <Linkedin size={20} />, color: "bg-[#0A66C2]", url: "https://www.linkedin.com/company/ecell-scsit/" }
-              ].map((social) => (
+              {socialLinks.map((social) => (
                 <a
                   key={social.name}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-10 h-10 flex items-center justify-center rounded-full ${social.color} text-white hover:opacity-90 transition-opacity duration-300`}
                   aria-label={social.name}
+                  className={`w-10 h-10 flex items-center justify-center rounded-full ${social.color} text-white hover:scale-105 transition-transform duration-300 shadow-md`}
                 >
                   {social.icon}
                 </a>
               ))}
             </div>
           </div>
-          
-          <div className="col-span-1">
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+
+          {/* Column 2 */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-background">
+              Quick Links
+            </h3>
             <ul className="space-y-3">
-              {["About", "Team", "Events", "Initiatives", "Contact"].map((link) => (
-                <li key={link}>
-                  <a 
-                    href={`#${link.toLowerCase().replace(' ', '-')}`}
-                    onClick={handleScroll(link.toLowerCase().replace(' ', '-'))}
-                    className="text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-pointer"
+              {quickLinks.map((link) => (
+                <li key={link.id}>
+                  <a
+                    href={`#${link.id}`}
+                    onClick={handleScroll(link.id)}
+                    className="text-muted-foreground hover:text-primary transition-colors duration-200 cursor-pointer"
                   >
-                    {link}
+                    {link.label}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
+
+          {/* Column 3 */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-background">
+              Contact Us
+            </h3>
+            <p className="text-muted-foreground">
+              SCSIT, Takshashila Campus,
+              <br /> Indore, MP – 452020
+            </p>
+            <p className="text-muted-foreground mt-2">
+              Email:{" "}
+              <a
+                href="mailto:ecellscsit@gmail.com"
+                className="text-primary hover:underline"
+              >
+                ecellscsit@gmail.com
+              </a>
+            </p>
+          </div>
+
         </div>
-        
+
+        {/* Bottom Section */}
         <div className="mt-12 pt-8 border-t text-center">
           <p className="text-muted-foreground text-sm">
-            © {currentYear} Entrepreneurship Cell. All rights reserved.
+            © {currentYear} Entrepreneurship Cell, SCSIT — All rights reserved.
           </p>
-          <p className="text-muted-foreground text-sm">
-            Created by Gourav Patidar <a href="https://my-3d-portfolio-liard.vercel.app/" className="text-blue-500 hover:underline" target="_blank">Gourav's Portfolio</a> | Divya Nagar 
-            <a href="https://divya-green.vercel.app/" className="text-blue-500 hover:underline" target="_blank"> Divya's Portfolio</a>
+
+          <p className="text-muted-foreground text-sm mt-2">
+            Meet the developers:&nbsp;
+            <a
+              href="https://my-3d-portfolio-liard.vercel.app/"
+              className="text-blue-500 hover:underline"
+              target="_blank"
+            >
+              Gourav Patidar
+            </a>{" "}
+            |{" "}
+            <a
+              href="https://divya-green.vercel.app/"
+              className="text-blue-500 hover:underline"
+              target="_blank"
+            >
+              Divya Nagar
+            </a>{" "}
+            |{" "}
+            <a
+              href="http://abnjain.me/"
+              className="text-blue-500 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Abhinav Jain
+            </a>
           </p>
         </div>
+
       </div>
     </footer>
   );

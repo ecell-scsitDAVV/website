@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +29,7 @@ interface TeamMember {
   socialLinks: SocialLink[];
 }
 
-// Color schemes for ChromaGrid cards
+// Color schemes for ChromaGrid
 const colorSchemes = [
   { borderColor: '#4F46E5', gradient: 'linear-gradient(145deg,#4F46E5,#000)' },
   { borderColor: '#10B981', gradient: 'linear-gradient(210deg,#10B981,#000)' },
@@ -53,21 +52,14 @@ const Team: React.FC = () => {
       .eq('batch_year', selectedBatch)
       .order('created_at', { ascending: false });
 
-    if (error) {
-      throw new Error(`Error fetching team members: ${error.message}`);
-    }
+    if (error) throw error;
 
     const membersWithLinks = await Promise.all(
       members.map(async (member) => {
-        const { data: socialLinks, error: linksError } = await supabase
+        const { data: socialLinks } = await supabase
           .from('member_social_links')
-          .select('*')
+          .select('id, icon, url')
           .eq('member_id', member.id);
-
-        if (linksError) {
-          console.error(`Error fetching social links for member ${member.id}:`, linksError);
-          return { ...member, socialLinks: [] };
-        }
 
         return {
           ...member,
@@ -81,106 +73,114 @@ const Team: React.FC = () => {
 
   const { data: members = [], isLoading, error } = useQuery({
     queryKey: ['team-members', selectedBatch],
-    queryFn: fetchTeamMembers
+    queryFn: fetchTeamMembers,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Convert team members to ChromaGrid items
-  const chromaItems: ChromaItem[] = members.map((member, index) => {
-    const colorScheme = colorSchemes[index % colorSchemes.length];
-    
-    // Helper function to extract username from URL
-    const extractUsername = (url: string, platform: string): string => {
-      try {
-        const urlObj = new URL(url);
-        const pathname = urlObj.pathname;
-        
-        switch (platform) {
-          case 'linkedin':
-            // Extract from linkedin.com/in/username or linkedin.com/in/username/
-            const linkedinMatch = pathname.match(/\/in\/([^\/]+)/);
-            return linkedinMatch ? `@${linkedinMatch[1]}` : '';
-          
-          case 'instagram':
-            // Extract from instagram.com/username or instagram.com/username/
-            const instagramMatch = pathname.match(/\/([^\/]+)/);
-            return instagramMatch && instagramMatch[1] !== '' ? `@${instagramMatch[1]}` : '';
-          
-          case 'twitter':
-            // Extract from twitter.com/username or x.com/username
-            const twitterMatch = pathname.match(/\/([^\/]+)/);
-            return twitterMatch && twitterMatch[1] !== '' ? `@${twitterMatch[1]}` : '';
-          
-          default:
-            return '';
-        }
-      } catch (error) {
-        console.error(`Error parsing URL ${url}:`, error);
-        return '';
+  // Extract clean username from social URLs
+  const extractUsername = (url: string, platform: string): string => {
+    try {
+      const cleanUrl = url.trim();
+      if (cleanUrl.startsWith('data:')) return ''; // skip base64
+      const urlObj = new URL(cleanUrl);
+      const path = urlObj.pathname;
+
+      switch (platform.toLowerCase()) {
+        case 'linkedin':
+          const liMatch = path.match(/\/in\/([^\/?#]+)/);
+          return liMatch ? `@${liMatch[1]}` : '';
+        case 'instagram':
+          const igMatch = path.match(/^\/([^\/?#]+)\//);
+          return igMatch && igMatch[1] ? `@${igMatch[1]}` : '';
+        case 'twitter':
+        case 'x':
+          const twMatch = path.match(/^\/([^\/?#]+)/);
+          return twMatch && twMatch[1] ? `@${twMatch[1]}` : '';
+        default:
+          return '';
       }
-    };
-    
-    // Extract social handles from social links
-    const socialHandles: { linkedin?: string; instagram?: string; twitter?: string } = {};
-    
+    } catch {
+      return '';
+    }
+  };
+
+  const chromaItems: ChromaItem[] = members.map((member, index) => {
+    const colors = colorSchemes[index % colorSchemes.length];
+
+    const socialHandles: any = {};
     member.socialLinks?.forEach(link => {
       const url = link.url.toLowerCase();
       const icon = link.icon.toLowerCase();
-      
-      if (url.includes('linkedin.com') || icon.includes('linkedin')) {
-        const username = extractUsername(link.url, 'linkedin');
-        if (username) socialHandles.linkedin = username;
-      } else if (url.includes('instagram.com') || icon.includes('instagram')) {
-        const username = extractUsername(link.url, 'instagram');
-        if (username) socialHandles.instagram = username;
-      } else if (url.includes('twitter.com') || url.includes('x.com') || icon.includes('twitter')) {
-        const username = extractUsername(link.url, 'twitter');
-        if (username) socialHandles.twitter = username;
+
+      if (url.includes('linkedin') || icon.includes('linkedin')) {
+        socialHandles.linkedin = extractUsername(link.url, 'linkedin');
+      }
+      if (url.includes('instagram') || icon.includes('instagram')) {
+        socialHandles.instagram = extractUsername(link.url, 'instagram');
+      }
+      if (url.includes('twitter') || url.includes('x.com') || icon.includes('twitter')) {
+        socialHandles.twitter = extractUsername(link.url, 'twitter');
       }
     });
-    
-    // Get primary social link for click action (prioritize LinkedIn, then Instagram, then Twitter)
-    const primarySocialLink = member.socialLinks?.find(link => 
-      link.url.toLowerCase().includes('linkedin.com')
-    ) || member.socialLinks?.find(link => 
-      link.url.toLowerCase().includes('instagram.com')
-    ) || member.socialLinks?.find(link => 
-      link.url.toLowerCase().includes('twitter.com') || link.url.toLowerCase().includes('x.com')
-    );
-    
+
+    const primaryLink = member.socialLinks?.find(l => 
+      l.url.includes('linkedin.com')
+    ) || member.socialLinks?.[0];
+
     return {
       image: member.image_url,
-      title: member.name,
+      title: member.name.trim(),
       subtitle: member.position,
       socialHandles,
-      borderColor: colorScheme.borderColor,
-      gradient: colorScheme.gradient,
-      url: primarySocialLink?.url
+      borderColor: colors.borderColor,
+      gradient: colors.gradient,
+      url: primaryLink?.url || undefined,
+      // Force consistent image rendering
+      imageProps: {
+        loading: "lazy" as const,
+        className: "object-cover w-full h-full",
+        style: { objectPosition: "top" }
+      }
     };
   });
 
+  // Custom Image Component for ChromaGrid to enforce fixed height
+  const ChromaImageWrapper = ({ src, alt }: { src: string; alt: string }) => (
+    <div className="w-full h-full overflow-hidden bg-gray-900">
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        className="w-full h-full object-cover object-top transition-transform duration-700 hover:scale-110"
+        style={{ 
+          minHeight: '420px',
+          aspectRatio: '3/4'
+        }}
+        onError={(e) => {
+          e.currentTarget.src = 'https://via.placeholder.com/400x533/1a1a1a/ffffff?text=No+Image';
+        }}
+      />
+    </div>
+  );
+
   if (isLoading) {
     return (
-      <div className="tech-gradient py-24 px-4">
+      <div className="tech-gradient min-h-screen py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">Our Team</h1>
-            <div className="h-10 bg-gray-200 animate-pulse rounded mb-8 w-48 mx-auto"></div>
-          </div>
-          
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="bg-white dark:bg-black rounded-lg overflow-hidden h-full">
-                <div className="aspect-[3/4] bg-gray-200 animate-pulse"></div>
-                <div className="p-5 text-center">
-                  <div className="h-6 bg-gray-200 animate-pulse rounded mb-2 mx-auto w-3/4"></div>
-                  <div className="h-4 bg-gray-200 animate-pulse rounded mb-3 mx-auto w-1/2"></div>
-                  <div className="flex justify-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
-                    <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
+          <div className="animate-pulse">
+            <div className="h-10 bg-white/20 rounded w-48 mb-8"></div>
+            <div className="h-16 bg-white/30 rounded w-96 mx-auto mb-12"></div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {[...Array(12)].map((_, i) => (
+                <div key={i} className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20">
+                  <div className="h-96 md:h-[420px] bg-white/5"></div>
+                  <div className="p-6 text-center">
+                    <div className="h-6 bg-white/30 rounded mb-3 mx-auto w-4/5"></div>
+                    <div className="h-4 bg-white/20 rounded mx-auto w-3/5"></div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -189,39 +189,42 @@ const Team: React.FC = () => {
 
   if (error) {
     return (
-      <div className="tech-gradient py-24 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">Our Team</h1>
-          <p className="text-destructive">Error loading team members. Please try again later.</p>
+      <div className="tech-gradient min-h-screen py-24 px-4 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-5xl font-bold text-white mb-4">Our Team</h1>
+          <p className="text-red-400 text-lg">Failed to load team members. Please try again later.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="tech-gradient py-24 px-4">
+    <div className="tech-gradient min-h-screen py-24 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
+        <div className="mb-10">
           <Button 
             onClick={() => navigate(-1)} 
             variant="outline" 
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 backdrop-blur-sm"
+            className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
         </div>
+
         <RevealAnimation>
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">Our Team</h1>
-            <p className="text-white/80 max-w-2xl mx-auto mb-8">
-              Meet the dedicated individuals committed to fostering innovation and entrepreneurship in our community.
+          <div className="text-center mb-16">
+            <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 text-white">
+              Our Team
+            </h1>
+            <p className="text-white/80 text-lg max-w-3xl mx-auto leading-relaxed">
+              Meet the passionate leaders driving innovation and building the future of entrepreneurship.
             </p>
-            
-            <div className="flex justify-center mb-8">
+
+            <div className="flex justify-center mt-10">
               <Select value={selectedBatch} onValueChange={setSelectedBatch}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Select batch year" />
+                <SelectTrigger className="w-56 bg-white/10 border-white/30 text-white placeholder:text-white/60">
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="2024-25">Batch 2024-25</SelectItem>
@@ -231,19 +234,20 @@ const Team: React.FC = () => {
             </div>
           </div>
         </RevealAnimation>
-        
+
         {members.length === 0 ? (
-          <div className="text-center p-8">
-            <p className="text-white/80">No team members found for the selected batch.</p>
+          <div className="text-center py-20">
+            <p className="text-white/70 text-xl">No team members found for {selectedBatch}</p>
           </div>
         ) : (
-          <div style={{ position: 'relative', minHeight: '600px' }}>
+          <div className="relative">
             <ChromaGrid 
               items={chromaItems}
-              radius={300}
-              damping={0.45}
-              fadeOut={0.6}
+              radius={320}
+              damping={0.5}
+              fadeOut={0.7}
               ease="power3.out"
+              imageComponent={ChromaImageWrapper} // Enforce fixed height
             />
           </div>
         )}

@@ -42,7 +42,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
       <img
         src={error ? fallback : src}
         alt={alt}
-        className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
+        className={`transition-opacity object-fill object-center duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
         width={width}
         height={height}
         loading={loading}

@@ -407,7 +407,7 @@ const AdminMembers: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Manage Team Members</h1>
+        <h1 className="text-2xl text-secondary font-bold">Manage Team Members</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={handleAddMember}>
@@ -640,7 +640,7 @@ const AdminMembers: React.FC = () => {
                 <ImageWithFallback
                   src={member.image_url}
                   alt={member.name}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-96 object-center"
                 />
                 <div className="absolute top-2 right-2 flex gap-2">
                   <Button 

@@ -64,7 +64,7 @@ const TestimonialsSection: React.FC = () => {
       </section>;
   }
   if (testimonials.length === 0) {
-    return <section className="testimonials-section px-4 py-8 tech-gradient relative">{/* Updated background */}
+    return <section id="testimonials" className="testimonials-section px-4 py-8 tech-gradient relative">{/* Updated background */}
         <div className="relative z-10">{/* Ensure content is above gradient overlay */}
           <h2 className="text-2xl font-bold mb-8 text-center text-white">
             Testimonials
@@ -75,7 +75,7 @@ const TestimonialsSection: React.FC = () => {
         </div>
       </section>;
   }
-  return <section className="testimonials-section px-4 py-8 tech-gradient relative">{/* Updated background */}
+  return <section id="testimonials" className="testimonials-section px-4 py-8 tech-gradient relative">{/* Updated background */}
       <div className="relative z-10">{/* Ensure content is above gradient overlay */}
         <h2 className="text-2xl font-bold mb-8 text-center text-white">
           Testimonials

@@ -14,6 +14,10 @@ import Gallery from './pages/Gallery';
 import Blog from './pages/Blog';
 import Announcements from "./pages/Announcements";
 import ScrollToHash from "./components/ScrolltoHash";
+import AboutSection from "./components/AboutSection";
+import InitiativesSection from "./components/InitiativesSection";
+import ContactSection from "./components/ContactSection";
+import RedirectToHash from "./components/RedirectToHash";
 
 // Create the query client outside of the component
 const queryClient = new QueryClient();
@@ -22,7 +26,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <TargetCursor 
+        <TargetCursor
           spinDuration={2}
           hideDefaultCursor={true}
         />
@@ -31,6 +35,12 @@ function App() {
           <div className="App">
             <Routes>
               <Route path="/" element={<Index />} />
+
+              <Route path="/about" element={<RedirectToHash to="/#about" />} />
+              <Route path="/initiatives" element={<RedirectToHash to="/#initiatives" />} />
+              <Route path="/contact" element={<RedirectToHash to="/#contact" />} />
+              <Route path="/testimonials" element={<RedirectToHash to="/#testimonials" />} />
+
               <Route path="/team" element={<Team />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/blog" element={<Blog />} />

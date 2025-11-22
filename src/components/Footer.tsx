@@ -45,6 +45,10 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="py-12 px-4 sm:px-6 border-t bg-primary/10">
+      <p className="sr-only">
+        E-Cell SCSIT | Entrepreneurship Cell DAVV | Startup Club DAVV | Innovation Cell SCSIT |
+        Student Entrepreneurship SCSIT | DAVV Clubs | ECell SCSIT Indore
+      </p>
       <div className="max-w-7xl mx-auto">
 
         {/* Top Section */}

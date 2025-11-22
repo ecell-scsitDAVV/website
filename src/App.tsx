@@ -31,6 +31,15 @@ function App() {
         <meta name="description" content="The Entrepreneurship Cell - SCSIT here is the official Entrepreneurship Cell of SCSIT, DAVV Indore. We foster innovation, startups, and tech-driven student initiatives." />
         <link rel="canonical" href="https://ecell-davv.vercel.app/" />
       </Helmet>
+      <p className="sr-only">
+        E-Cell SCSIT | Entrepreneurship Cell DAVV | Startup Club DAVV | Innovation Cell SCSIT |
+        Student Entrepreneurship SCSIT | DAVV Clubs | ECell SCSIT Indore | Entrepreneurship
+        Community DAVV | Tech Startups SCSIT | Student Innovation DAVV | E-Cell Events SCSIT |
+        Startup Support DAVV | Entrepreneurship Programs SCSIT | E-Cell Initiatives DAVV |
+        Student-led Startups SCSIT | Innovation Hub DAVV | E-Cell Networking SCSIT |
+        Entrepreneurship Resources DAVV | Startup Mentorship SCSIT | E-Cell Workshops DAVV | ecell scsit |
+        ecell davv | ecell indore | entrepreneurship cell indore
+      </p>
       <TooltipProvider>
         <TargetCursor
           spinDuration={2}

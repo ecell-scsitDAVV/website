@@ -11,6 +11,7 @@ import AdminTestimonials from './AdminTestimonials';
 import AdminLogin from './AdminLogin';
 import AdminSettings from './AdminProfileSettings';
 import { Helmet } from 'react-helmet';
+import AdminInitiatives from './AdminInitiatives';
 
 // Simple auth management - in a real app, use a proper auth system
 const useAuth = () => {
@@ -95,6 +96,12 @@ const AdminPanel: React.FC = () => {
                   Announcements
                 </Link>
                 <Link
+                  to="/admin/initiatives"
+                  className={`px-3 py-2 rounded-md ${location.pathname === '/admin/initiatives' ? 'bg-white/20' : 'hover:bg-white/10'}`}
+                >
+                  Initiatives
+                </Link>
+                <Link
                   to="/admin/testimonials"
                   className={`px-3 py-2 rounded-md ${location.pathname === '/admin/testimonials' ? 'bg-white/20' : 'hover:bg-white/10'}`}
                 >
@@ -140,6 +147,16 @@ const AdminPanel: React.FC = () => {
           <Route path="/bulletin" element={
             <ProtectedRoute>
               <AdminBulletin />
+            </ProtectedRoute>
+          } />
+          <Route path="/bulletin" element={
+            <ProtectedRoute>
+              <AdminBulletin />
+            </ProtectedRoute>
+          } />
+          <Route path="/initiatives" element={
+            <ProtectedRoute>
+              <AdminInitiatives />
             </ProtectedRoute>
           } />
           <Route path="/testimonials" element={

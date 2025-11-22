@@ -9,6 +9,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Initiative {
+  id: string;
+  title: string;
+  description: string;
+  images: string[]; // using first image only for display
+}
+
 
 const AUTO_SLIDE_INTERVAL = 3500;
 const ANIMATION_STAGGER = 120;
@@ -41,38 +50,78 @@ const InitiativeCard = ({ title, description, imageSrc, delay }: any) => {
 };
 
 const InitiativesSection: React.FC = () => {
-  const initiatives = [
+  const [initiatives, setInitiatives] = useState<Initiative[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchInitiatives = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const { data, error: fetchError } = await supabase
+          .from("initiatives")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (fetchError) throw new Error(fetchError.message);
+
+        setInitiatives(data || []);
+
+        // Store backup in localStorage
+        localStorage.setItem("initiatives", JSON.stringify(data));
+      } catch (err) {
+        console.error("Supabase fetch failed:", err);
+        setError(err instanceof Error ? err.message : "Unknown error");
+
+        // fallback to localStorage
+        const saved = localStorage.getItem("initiatives");
+        if (saved) {
+          try {
+            setInitiatives(JSON.parse(saved));
+            setError(null);
+          } catch {
+            console.error("Error parsing saved initiatives");
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInitiatives();
+  }, []);
+
+  const defaultInitiatives = [
     {
-      title: "E-Summit",
-      description: "Flagship event bringing founders, investors & innovators together.",
-      imageSrc: "https://images.unsplash.com/photo-1559223607-a43c990c692c?auto=format&fit=crop&w=1170&q=80",
+      id: "1",
+      title: "Startup Bootcamp",
+      description: "Three-day intensive workshop for aspiring entrepreneurs.",
+      images: [
+        "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=80",
+      ],
     },
     {
-      title: "Startup Incubation",
-      description: "Support early-stage startups with mentorship, resources & funding.",
-      imageSrc: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1170&q=80",
+      id: "2",
+      title: "Innovation Drive",
+      description: "Encouraging tech innovation and creative problem-solving.",
+      images: [
+        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&q=80",
+      ],
     },
     {
-      title: "Workshop Series",
-      description: "Skill-based workshops covering entrepreneurship, business & tech.",
-      imageSrc: "https://images.unsplash.com/photo-1544531585-9847b68c8c86?auto=format&fit=crop&w=1170&q=80",
-    },
-    {
-      title: "Pitch Competition",
-      description: "Present business ideas to judges & win mentorship opportunities.",
-      imageSrc: "https://images.unsplash.com/photo-1533750516278-4555388a4a06?auto=format&fit=crop&w=1170&q=80",
-    },
-    {
-      title: "Mentorship Program",
-      description: "Connect with industry mentors & experienced founders.",
-      imageSrc: "https://images.unsplash.com/photo-1558403194-611308249627?auto=format&fit=crop&w=1170&q=80",
-    },
-    {
-      title: "Innovation Lab",
-      description: "A creative space for building projects & collaborating.",
-      imageSrc: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1170&q=80",
+      id: "3",
+      title: "Women In Business",
+      description: "Empowering female founders and entrepreneurs.",
+      images: [
+        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200&q=80",
+      ],
     },
   ];
+
+  const displayInitiatives =
+    initiatives.length > 0 ? initiatives : defaultInitiatives;
 
   const [current, setCurrent] = useState(0);
 
@@ -123,7 +172,7 @@ const InitiativesSection: React.FC = () => {
             setApi={(api) => api && api.scrollTo(current)}
           >
             <CarouselContent>
-              {initiatives.map((item, i) => (
+              {displayInitiatives.map((item, i) => (
                 <CarouselItem
                   key={i}
                   className="basis-full sm:basis-1/2 lg:basis-1/3 px-3"
@@ -131,7 +180,7 @@ const InitiativesSection: React.FC = () => {
                   <InitiativeCard
                     title={item.title}
                     description={item.description}
-                    imageSrc={item.imageSrc}
+                    imageSrc={item.images}
                     delay={i * ANIMATION_STAGGER}
                   />
                 </CarouselItem>

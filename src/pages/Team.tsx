@@ -6,13 +6,14 @@ import RevealAnimation from '@/components/RevealAnimation';
 import ChromaGrid, { ChromaItem } from '@/components/ChromaGrid';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from 'lucide-react';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Helmet } from "react-helmet";
 
 interface SocialLink {
   id?: string;
@@ -123,7 +124,7 @@ const Team: React.FC = () => {
       }
     });
 
-    const primaryLink = member.socialLinks?.find(l => 
+    const primaryLink = member.socialLinks?.find(l =>
       l.url.includes('linkedin.com')
     ) || member.socialLinks?.[0];
 
@@ -152,7 +153,7 @@ const Team: React.FC = () => {
         alt={alt}
         loading="lazy"
         className="w-full h-full object-cover object-top transition-transform duration-700 hover:scale-110"
-        style={{ 
+        style={{
           minHeight: '420px',
           aspectRatio: '3/4'
         }}
@@ -200,11 +201,16 @@ const Team: React.FC = () => {
 
   return (
     <div className="tech-gradient min-h-screen py-24 px-4">
+      <Helmet>
+        <title>Team - E-Cell SCSIT, DAVV</title>
+        <meta name="description" content="The Entrepreneurship Cell - SCSIT here is the official Entrepreneurship Cell of SCSIT, DAVV Indore. We foster innovation, startups, and tech-driven student initiatives." />
+        <link rel="canonical" href="https://ecell-davv.vercel.app/" />
+      </Helmet>
       <div className="max-w-7xl mx-auto">
         <div className="mb-10">
-          <Button 
-            onClick={() => navigate(-1)} 
-            variant="outline" 
+          <Button
+            onClick={() => navigate(-1)}
+            variant="outline"
             className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -241,7 +247,7 @@ const Team: React.FC = () => {
           </div>
         ) : (
           <div className="relative">
-            <ChromaGrid 
+            <ChromaGrid
               items={chromaItems}
               radius={320}
               damping={0.5}

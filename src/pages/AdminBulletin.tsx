@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Trash2, Plus, Link, Image, File, Paperclip } from "lucide-react";
+import { Helmet } from 'react-helmet';
 
 interface BulletinItem {
   id: string;
@@ -42,14 +43,14 @@ const AdminBulletin: React.FC = () => {
         .from('bulletin_items')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as BulletinItem[] || [];
     }
   });
 
   const createMutation = useMutation({
-    mutationFn: async (newItem: { 
+    mutationFn: async (newItem: {
       title: string;
       content: string;
       has_attachment: boolean;
@@ -61,7 +62,7 @@ const AdminBulletin: React.FC = () => {
         .from('bulletin_items')
         .insert([newItem])
         .select();
-      
+
       if (error) throw error;
       return data;
     },
@@ -89,28 +90,28 @@ const AdminBulletin: React.FC = () => {
         .select('has_attachment, attachment_url')
         .eq('id', id)
         .single();
-      
+
       const typedItemData = itemData as BulletinItem;
-      
-      if (typedItemData?.has_attachment && typedItemData.attachment_url && 
-          (typedItemData.attachment_url.includes('announcement_attachments'))) {
+
+      if (typedItemData?.has_attachment && typedItemData.attachment_url &&
+        (typedItemData.attachment_url.includes('announcement_attachments'))) {
         const path = typedItemData.attachment_url.split('/').pop();
         if (path) {
           const { error: storageError } = await supabase.storage
             .from('announcement_attachments')
             .remove([path]);
-          
+
           if (storageError) {
             console.error('Error deleting file from storage:', storageError);
           }
         }
       }
-      
+
       const { error } = await supabase
         .from('bulletin_items')
         .delete()
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -141,22 +142,22 @@ const AdminBulletin: React.FC = () => {
 
   const uploadFile = async (): Promise<string | null> => {
     if (!fileToUpload) return null;
-    
+
     setIsUploading(true);
     try {
       const fileExt = fileToUpload.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      
+
       const { data, error } = await supabase.storage
         .from('announcement_attachments')
         .upload(fileName, fileToUpload);
-      
+
       if (error) throw error;
-      
+
       const { data: { publicUrl } } = supabase.storage
         .from('announcement_attachments')
         .getPublicUrl(data.path);
-      
+
       return publicUrl;
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -185,7 +186,7 @@ const AdminBulletin: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim() || !content.trim()) {
       toast({
         title: "Error",
@@ -216,7 +217,7 @@ const AdminBulletin: React.FC = () => {
         }
         newAnnouncement.attachment_url = linkUrl;
       }
-      
+
       if ((attachmentType === "image" || attachmentType === "pdf") && fileToUpload) {
         const fileUrl = await uploadFile();
         if (!fileUrl) {
@@ -258,8 +259,13 @@ const AdminBulletin: React.FC = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Manage Announcements</h1>
-      
+      <Helmet>
+        <title>Admin Bulletin Manager - E-Cell SCSIT, DAVV</title>
+        <meta name="description" content="The Entrepreneurship Cell - SCSIT here is the official Entrepreneurship Cell of SCSIT, DAVV Indore. We foster innovation, startups, and tech-driven student initiatives." />
+        <link rel="canonical" href="https://ecell-davv.vercel.app/" />
+      </Helmet>
+      <h1 className="text-2xl text-background font-bold mb-6">Manage Announcements</h1>
+
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>Add New Announcement</CardTitle>
@@ -288,20 +294,20 @@ const AdminBulletin: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label className="block mb-2 text-sm font-medium">Attachment Type</label>
               <div className="flex flex-wrap gap-2">
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   variant={attachmentType === "none" ? "default" : "outline"}
                   onClick={() => setAttachmentType("none")}
                   className="flex-1"
                 >
                   None
                 </Button>
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   variant={attachmentType === "link" ? "default" : "outline"}
                   onClick={() => setAttachmentType("link")}
                   className="flex-1"
@@ -309,8 +315,8 @@ const AdminBulletin: React.FC = () => {
                   <Link className="mr-2 h-4 w-4" />
                   Link
                 </Button>
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   variant={attachmentType === "image" ? "default" : "outline"}
                   onClick={() => setAttachmentType("image")}
                   className="flex-1"
@@ -318,8 +324,8 @@ const AdminBulletin: React.FC = () => {
                   <Image className="mr-2 h-4 w-4" />
                   Image
                 </Button>
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   variant={attachmentType === "pdf" ? "default" : "outline"}
                   onClick={() => setAttachmentType("pdf")}
                   className="flex-1"
@@ -329,7 +335,7 @@ const AdminBulletin: React.FC = () => {
                 </Button>
               </div>
             </div>
-            
+
             {attachmentType === "link" && (
               <div>
                 <label htmlFor="linkUrl" className="block mb-2 text-sm font-medium">Link URL</label>
@@ -350,7 +356,7 @@ const AdminBulletin: React.FC = () => {
                 />
               </div>
             )}
-            
+
             {(attachmentType === "image" || attachmentType === "pdf") && (
               <div>
                 <label htmlFor="fileUpload" className="block mb-2 text-sm font-medium">
@@ -368,8 +374,8 @@ const AdminBulletin: React.FC = () => {
             )}
           </CardContent>
           <CardFooter>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={createMutation.isPending || isUploading}
               className="w-full"
             >
@@ -389,8 +395,8 @@ const AdminBulletin: React.FC = () => {
         </form>
       </Card>
 
-      <h2 className="text-xl font-semibold mb-4">Current Announcements</h2>
-      
+      <h2 className="text-xl text-background font-semibold mb-4">Current Announcements</h2>
+
       {isLoading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin" />
@@ -423,34 +429,34 @@ const AdminBulletin: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-sm mb-3">{item.content}</p>
-                
+
                 {item.has_attachment && item.attachment_url && (
                   <div className="mt-3 flex items-center p-2 bg-muted rounded-md">
                     {getAttachmentIcon(item.attachment_type)}
                     <span className="ml-2 text-sm">
                       {item.attachment_type === 'link' ? (
-                        <a 
-                          href={item.attachment_url} 
-                          target="_blank" 
+                        <a
+                          href={item.attachment_url}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-500 hover:underline flex items-center"
                         >
-                          {item.attachment_name || 'View Link'} 
+                          {item.attachment_name || 'View Link'}
                           <Link className="h-3 w-3 ml-1" />
                         </a>
                       ) : item.attachment_type === 'image' ? (
-                        <a 
-                          href={item.attachment_url} 
-                          target="_blank" 
+                        <a
+                          href={item.attachment_url}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-500 hover:underline"
                         >
                           {item.attachment_name || 'View Image'}
                         </a>
                       ) : item.attachment_type === 'pdf' ? (
-                        <a 
-                          href={item.attachment_url} 
-                          target="_blank" 
+                        <a
+                          href={item.attachment_url}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-500 hover:underline"
                         >
@@ -467,7 +473,7 @@ const AdminBulletin: React.FC = () => {
           ))}
         </div>
       )}
-      
+
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -480,8 +486,8 @@ const AdminBulletin: React.FC = () => {
             <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
               Cancel
             </Button>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={confirmDelete}
               disabled={deleteMutation.isPending}
             >

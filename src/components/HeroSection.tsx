@@ -60,7 +60,7 @@ const HeroSection: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="mb-3"
         >
-          <span className="inline-block py-1 px-3 mb-4 text-xs tracking-wider uppercase rounded-full bg-secondary text-primary font-medium">Entrepreneurship Cell</span>
+          <h1 className="inline-block py-1 px-3 mb-4 text-xs tracking-wider uppercase rounded-full bg-secondary text-primary font-medium">The Entrepreneurship Cell</h1>
         </motion.div>
 
         <div className="mb-6">
@@ -74,7 +74,7 @@ const HeroSection: React.FC = () => {
               Empowering Students To
             </span>
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}

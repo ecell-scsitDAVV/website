@@ -18,6 +18,7 @@ import AboutSection from "./components/AboutSection";
 import InitiativesSection from "./components/InitiativesSection";
 import ContactSection from "./components/ContactSection";
 import RedirectToHash from "./components/RedirectToHash";
+import { Helmet } from "react-helmet";
 
 // Create the query client outside of the component
 const queryClient = new QueryClient();
@@ -25,6 +26,11 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <Helmet>
+        <title>E-Cell SCSIT - Innovation & Entrepreneurship | DAVV Indore</title>
+        <meta name="description" content="The Entrepreneurship Cell - SCSIT here is the official Entrepreneurship Cell of SCSIT, DAVV Indore. We foster innovation, startups, and tech-driven student initiatives." />
+        <link rel="canonical" href="https://ecell-davv.vercel.app/" />
+      </Helmet>
       <TooltipProvider>
         <TargetCursor
           spinDuration={2}

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Trash2, Upload, Edit } from "lucide-react";
+import { Helmet } from 'react-helmet';
 
 interface Testimonial {
   id: string;
@@ -147,7 +148,7 @@ const AdminTestimonials: React.FC = () => {
         .eq('id', id);
 
       if (error) throw error;
-      
+
       toast({
         title: "Success",
         description: "Testimonial deleted successfully",
@@ -179,8 +180,13 @@ const AdminTestimonials: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <Helmet>
+        <title>Admin Testimony Manager - E-Cell SCSIT, DAVV</title>
+        <meta name="description" content="The Entrepreneurship Cell - SCSIT here is the official Entrepreneurship Cell of SCSIT, DAVV Indore. We foster innovation, startups, and tech-driven student initiatives." />
+        <link rel="canonical" href="https://ecell-davv.vercel.app/" />
+      </Helmet>
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-foreground">Manage Testimonials</h2>
+        <h2 className="text-2xl font-bold text-background">Manage Testimonials</h2>
       </div>
 
       {/* Add/Edit Form */}
@@ -203,7 +209,7 @@ const AdminTestimonials: React.FC = () => {
                 onChange={(e) => setFormData({ ...formData, position: e.target.value })}
               />
             </div>
-            
+
             <Textarea
               placeholder="Testimonial message"
               value={formData.message}
@@ -223,9 +229,9 @@ const AdminTestimonials: React.FC = () => {
               />
               {formData.image_url && !imageFile && (
                 <div className="flex items-center space-x-2">
-                  <img 
-                    src={formData.image_url} 
-                    alt="Current" 
+                  <img
+                    src={formData.image_url}
+                    alt="Current"
                     className="w-16 h-16 object-cover rounded"
                   />
                   <span className="text-sm text-muted-foreground">Current image</span>
@@ -249,6 +255,7 @@ const AdminTestimonials: React.FC = () => {
 
       {/* Testimonials List */}
       <div className="grid gap-4">
+        <h3 className="text-lg font-semibold text-background mb-4">Current Testimonials</h3>
         {testimonials.map((testimonial) => (
           <Card key={testimonial.id}>
             <CardContent className="p-6">

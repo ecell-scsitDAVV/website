@@ -83,51 +83,51 @@ const EventGallery: React.FC = () => {
   // Use default items if none were found
   const displayItems = galleryItems.length > 0 ? galleryItems : defaultGalleryItems;
   return <section id="gallery" className="py-24 px-4">
-      <div className="max-w-7xl mx-auto">
-        <RevealAnimation>
-          <span className="inline-block py-1 px-3 mb-3 text-xs tracking-wider uppercase rounded-full bg-secondary text-primary font-medium">Gallery</span>
+    <div className="max-w-7xl mx-auto">
+      <RevealAnimation>
+        <h1 className="inline-block py-1 px-3 mb-3 text-xs tracking-wider uppercase rounded-full bg-secondary text-primary font-medium">Gallery</h1>
+      </RevealAnimation>
+
+      <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-12">
+        <RevealAnimation delay={100}>
+          <h2 className="text-3xl text-background md:text-4xl font-bold tracking-tight">
+            Our Events & Milestones
+          </h2>
         </RevealAnimation>
 
-        <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-12">
-          <RevealAnimation delay={100}>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Our Events & Milestones
-            </h2>
-          </RevealAnimation>
-
-          <RevealAnimation delay={200}>
-            <p className="max-w-md mt-4 md:mt-0 text-zinc-900">
-              Explore our achievements and the exciting events we've organized throughout the years.
-            </p>
-          </RevealAnimation>
-        </div>
-
-        {isLoading ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3].map(n => <div key={n} className="bg-card rounded-xl overflow-hidden">
-                <div className="aspect-[16/9] bg-gray-200 animate-pulse"></div>
-                <div className="p-5">
-                  <div className="h-4 bg-gray-200 animate-pulse rounded mb-2 w-1/4"></div>
-                  <div className="h-6 bg-gray-200 animate-pulse rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 animate-pulse rounded w-3/4"></div>
-                </div>
-              </div>)}
-          </div> : error && displayItems === defaultGalleryItems ? <div className="text-center py-8">
-            <p className="text-destructive">Error loading gallery items. Using default content.</p>
-          </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayItems.map((item, index) => <RevealAnimation key={item.id} delay={index * 100}>
-                <div className="group bg-card rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
-                  <div className="overflow-hidden aspect-video">
-                    <ImageWithFallback src={item.image_url} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  </div>
-                  <div className="p-5">
-                    <span className="text-sm text-muted-foreground">{formatDate(item.date)}</span>
-                    <h3 className="text-xl font-semibold mt-1 mb-2">{item.title}</h3>
-                    <p className="text-muted-foreground line-clamp-2">{item.description}</p>
-                  </div>
-                </div>
-              </RevealAnimation>)}
-          </div>}
+        <RevealAnimation delay={200}>
+          <p className="max-w-md mt-4 text-muted-foreground md:mt-0">
+            Explore our achievements and the exciting events we've organized throughout the years.
+          </p>
+        </RevealAnimation>
       </div>
-    </section>;
+
+      {isLoading ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[1, 2, 3].map(n => <div key={n} className="bg-card rounded-xl overflow-hidden">
+          <div className="aspect-[16/9] bg-gray-200 animate-pulse"></div>
+          <div className="p-5">
+            <div className="h-4 bg-gray-200 animate-pulse rounded mb-2 w-1/4"></div>
+            <div className="h-6 bg-gray-200 animate-pulse rounded mb-2"></div>
+            <div className="h-4 bg-gray-200 animate-pulse rounded w-3/4"></div>
+          </div>
+        </div>)}
+      </div> : error && displayItems === defaultGalleryItems ? <div className="text-center py-8">
+        <p className="text-destructive">Error loading gallery items. Using default content.</p>
+      </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {displayItems.map((item, index) => <RevealAnimation key={item.id} delay={index * 100}>
+          <div className="group bg-card rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
+            <div className="overflow-hidden aspect-video">
+              <ImageWithFallback src={item.image_url} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            </div>
+            <div className="p-5">
+              <span className="text-sm text-muted-foreground">{formatDate(item.date)}</span>
+              <h3 className="text-xl font-semibold mt-1 mb-2">{item.title}</h3>
+              <p className="text-muted-foreground line-clamp-2">{item.description}</p>
+            </div>
+          </div>
+        </RevealAnimation>)}
+      </div>}
+    </div>
+  </section>;
 };
 export default EventGallery;

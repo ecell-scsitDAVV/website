@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +19,7 @@ import { Trash2, Edit, PlusCircle, Calendar, Upload } from "lucide-react";
 import ImageWithFallback from '@/components/ImageWithFallback';
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet';
 
 interface GalleryItem {
   id: string;
@@ -262,7 +263,7 @@ const AdminGallery: React.FC = () => {
 
   const handleEditItem = (item: GalleryItem) => {
     setEditingItem(item);
-    
+
     // Populate form with item data
     setFormData({
       title: item.title,
@@ -270,7 +271,7 @@ const AdminGallery: React.FC = () => {
       date: item.date,
       imageSrc: item.image_url
     });
-    
+
     setIsDialogOpen(true);
   };
 
@@ -283,7 +284,7 @@ const AdminGallery: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     if (editingItem) {
       // Update existing item
       updateItemMutation.mutate({
@@ -313,7 +314,7 @@ const AdminGallery: React.FC = () => {
     return (
       <div className="text-center p-8">
         <p className="text-destructive">Error loading gallery items: {error instanceof Error ? error.message : 'Unknown error'}</p>
-        <Button 
+        <Button
           onClick={() => queryClient.invalidateQueries({ queryKey: ['gallery-items'] })}
           className="mt-4"
         >
@@ -325,8 +326,13 @@ const AdminGallery: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <Helmet>
+        <title>Admin Gallery Manager - E-Cell SCSIT, DAVV</title>
+        <meta name="description" content="The Entrepreneurship Cell - SCSIT here is the official Entrepreneurship Cell of SCSIT, DAVV Indore. We foster innovation, startups, and tech-driven student initiatives." />
+        <link rel="canonical" href="https://ecell-davv.vercel.app/" />
+      </Helmet>
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Manage Gallery</h1>
+        <h1 className="text-2xl text-background font-bold">Manage Gallery</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={handleAddItem}>
@@ -338,8 +344,8 @@ const AdminGallery: React.FC = () => {
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Edit' : 'Add'} Gallery Item</DialogTitle>
               <DialogDescription>
-                {editingItem 
-                  ? "Update the gallery item's information below." 
+                {editingItem
+                  ? "Update the gallery item's information below."
                   : "Fill in the details to add a new event or achievement."}
               </DialogDescription>
             </DialogHeader>
@@ -352,7 +358,7 @@ const AdminGallery: React.FC = () => {
                   <Input
                     id="title"
                     value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     className="col-span-3"
                     required
                   />
@@ -364,7 +370,7 @@ const AdminGallery: React.FC = () => {
                   <Textarea
                     id="description"
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     className="col-span-3"
                     required
                     rows={3}
@@ -378,12 +384,12 @@ const AdminGallery: React.FC = () => {
                     id="date"
                     type="date"
                     value={formData.date}
-                    onChange={(e) => setFormData({...formData, date: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     className="col-span-3"
                     required
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-4 items-start gap-4">
                   <Label htmlFor="imageUpload" className="text-right pt-2">
                     Image
@@ -399,8 +405,8 @@ const AdminGallery: React.FC = () => {
                         disabled={isUploading}
                         className="flex-1"
                       />
-                      <Button 
-                        type="button" 
+                      <Button
+                        type="button"
                         size="sm"
                         variant="outline"
                         onClick={() => fileInputRef.current?.click()}
@@ -410,34 +416,34 @@ const AdminGallery: React.FC = () => {
                         Upload
                       </Button>
                     </div>
-                    
+
                     {isUploading && (
                       <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div 
-                          className="bg-primary h-2.5 rounded-full transition-all duration-300" 
+                        <div
+                          className="bg-primary h-2.5 rounded-full transition-all duration-300"
                           style={{ width: `${uploadProgress}%` }}
                         ></div>
                       </div>
                     )}
-                    
+
                     {uploadError && (
                       <p className="text-sm text-destructive">{uploadError}</p>
                     )}
-                    
+
                     {formData.imageSrc && !isUploading && (
                       <div className="relative aspect-video w-full overflow-hidden rounded-md border">
-                        <img 
-                          src={formData.imageSrc} 
-                          alt="Preview" 
+                        <img
+                          src={formData.imageSrc}
+                          alt="Preview"
                           className="h-full w-full object-cover"
                         />
                       </div>
                     )}
-                    
+
                     <Input
                       placeholder="Or enter image URL manually"
                       value={formData.imageSrc}
-                      onChange={(e) => setFormData({...formData, imageSrc: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, imageSrc: e.target.value })}
                       className="w-full"
                       required={!formData.imageSrc}
                     />
@@ -485,17 +491,17 @@ const AdminGallery: React.FC = () => {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button 
-                    variant="default" 
-                    size="icon" 
+                  <Button
+                    variant="default"
+                    size="icon"
                     className="h-8 w-8 bg-primary/80 hover:bg-primary"
                     onClick={() => handleEditItem(item)}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button 
-                    variant="destructive" 
-                    size="icon" 
+                  <Button
+                    variant="destructive"
+                    size="icon"
                     className="h-8 w-8 bg-destructive/80 hover:bg-destructive"
                     onClick={() => handleDeleteItem(item.id)}
                   >

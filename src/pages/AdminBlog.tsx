@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Calendar, User, ExternalLink, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Helmet } from 'react-helmet';
 
 interface BlogPost {
   id: string;
@@ -80,8 +81,8 @@ const AdminBlog = () => {
       resetForm();
     },
     onError: (error) => {
-      toast({ 
-        title: "Error adding blog post", 
+      toast({
+        title: "Error adding blog post",
         description: error.message,
         variant: "destructive"
       });
@@ -106,8 +107,8 @@ const AdminBlog = () => {
       resetForm();
     },
     onError: (error) => {
-      toast({ 
-        title: "Error updating blog post", 
+      toast({
+        title: "Error updating blog post",
         description: error.message,
         variant: "destructive"
       });
@@ -128,8 +129,8 @@ const AdminBlog = () => {
       toast({ title: "Blog post deleted successfully!" });
     },
     onError: (error) => {
-      toast({ 
-        title: "Error deleting blog post", 
+      toast({
+        title: "Error deleting blog post",
         description: error.message,
         variant: "destructive"
       });
@@ -152,7 +153,7 @@ const AdminBlog = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const postData = {
       ...formData,
       tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
@@ -225,8 +226,13 @@ const AdminBlog = () => {
 
   return (
     <div className="p-6">
+      <Helmet>
+        <title>Admin Blog Manager - E-Cell SCSIT, DAVV</title>
+        <meta name="description" content="The Entrepreneurship Cell - SCSIT here is the official Entrepreneurship Cell of SCSIT, DAVV Indore. We foster innovation, startups, and tech-driven student initiatives." />
+        <link rel="canonical" href="https://ecell-davv.vercel.app/" />
+      </Helmet>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Blog Management</h1>
+        <h1 className="text-2xl text-background font-bold">Blog Management</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={handleAddPost}>
@@ -326,9 +332,9 @@ const AdminBlog = () => {
         {blogPosts.map((post) => (
           <Card key={post.id}>
             <CardHeader>
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-center">
                 <div className="flex-1">
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex justify-center items-center gap-2">
                     {post.title}
                     <Button
                       variant="ghost"

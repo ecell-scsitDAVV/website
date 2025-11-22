@@ -11,9 +11,9 @@ const AboutSection: React.FC = () => {
 
         {/* TITLE BADGE */}
         <RevealAnimation>
-          <span className="inline-block py-1 px-3 mb-4 text-xs tracking-wider uppercase rounded-full bg-secondary text-primary font-medium">
+          <h1 className="inline-block py-1 px-3 mb-4 text-xs tracking-wider uppercase rounded-full bg-secondary text-primary font-medium">
             About Us
-          </span>
+          </h1>
         </RevealAnimation>
 
         {/* HEADING */}
@@ -82,7 +82,7 @@ const AboutSection: React.FC = () => {
 
           {/* Mission */}
           <RevealAnimation delay={600}>
-            <Card className="bg-white/10 backdrop-blur-md h-56 border border-white/20 shadow-xl rounded-xl">
+            <Card className="bg-white/10 backdrop-blur-md min-h-60 border border-white/20 shadow-xl rounded-xl">
               <CardContent className="p-8">
                 <div className="flex items-center mb-4">
                   <div className="p-3 rounded-full bg-secondary text-primary mr-4">
@@ -101,7 +101,7 @@ const AboutSection: React.FC = () => {
 
           {/* Vision */}
           <RevealAnimation delay={700}>
-            <Card className="bg-white/10 backdrop-blur-md h-56 border border-white/20 shadow-xl rounded-xl">
+            <Card className="bg-white/10 backdrop-blur-md min-h-60 border border-white/20 shadow-xl rounded-xl">
               <CardContent className="p-8">
                 <div className="flex items-center mb-4">
                   <div className="p-3 rounded-full bg-secondary text-primary mr-4">

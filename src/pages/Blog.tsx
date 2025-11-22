@@ -7,6 +7,7 @@ import { Calendar, User, ExternalLink, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Helmet } from "react-helmet";
 
 interface BlogPost {
   id: string;
@@ -56,6 +57,11 @@ const Blog = () => {
 
   return (
     <div className="tech-gradient">
+      <Helmet>
+        <title>Blogs - E-Cell SCSIT, DAVV</title>
+        <meta name="description" content="The Entrepreneurship Cell - SCSIT here is the official Entrepreneurship Cell of SCSIT, DAVV Indore. We foster innovation, startups, and tech-driven student initiatives." />
+        <link rel="canonical" href="https://ecell-davv.vercel.app/" />
+      </Helmet>
       <Navbar />
       <main className="pt-20 relative z-10">
         <section className="py-20 px-4">
@@ -135,7 +141,7 @@ const Blog = () => {
                             )}
                           </div>
                         )}
-                        <Button 
+                        <Button
                           className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-medium transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 group-hover:scale-105"
                           onClick={() => window.open(post.medium_url, '_blank')}
                         >

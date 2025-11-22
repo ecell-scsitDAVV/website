@@ -9,7 +9,8 @@ import AdminBlog from './AdminBlog';
 import AdminBulletin from './AdminBulletin';
 import AdminTestimonials from './AdminTestimonials';
 import AdminLogin from './AdminLogin';
-import AdminSettings from './AdminSettings';
+import AdminSettings from './AdminProfileSettings';
+import { Helmet } from 'react-helmet';
 
 // Simple auth management - in a real app, use a proper auth system
 const useAuth = () => {
@@ -29,7 +30,7 @@ const useAuth = () => {
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = localStorage.getItem('admin_authenticated') === 'true';
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/admin/login" replace />;
   }
@@ -41,7 +42,7 @@ const AdminPanel: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const { toast } = useToast();
-  
+
   const handleLogout = () => {
     logout();
     toast({
@@ -55,6 +56,11 @@ const AdminPanel: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background tech-gradient">
+      <Helmet>
+        <title>Admin - E-Cell SCSIT, DAVV</title>
+        <meta name="description" content="The Entrepreneurship Cell - SCSIT here is the official Entrepreneurship Cell of SCSIT, DAVV Indore. We foster innovation, startups, and tech-driven student initiatives." />
+        <link rel="canonical" href="https://ecell-davv.vercel.app/" />
+      </Helmet>
       {showNav && (
         <nav className="bg-foreground text-primary-foreground p-4">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -62,47 +68,47 @@ const AdminPanel: React.FC = () => {
               <Link to="/" className="text-xl font-bold">
                 E-Cell Admin
               </Link>
-              
+
               <div className="flex space-x-4">
-                <Link 
-                  to="/admin/members" 
+                <Link
+                  to="/admin/members"
                   className={`px-3 py-2 rounded-md ${location.pathname === '/admin/members' ? 'bg-white/20' : 'hover:bg-white/10'}`}
                 >
                   Team Members
                 </Link>
-                <Link 
-                  to="/admin/gallery" 
+                <Link
+                  to="/admin/gallery"
                   className={`px-3 py-2 rounded-md ${location.pathname === '/admin/gallery' ? 'bg-white/20' : 'hover:bg-white/10'}`}
                 >
                   Gallery
                 </Link>
-                <Link 
-                  to="/admin/blog" 
+                <Link
+                  to="/admin/blog"
                   className={`px-3 py-2 rounded-md ${location.pathname === '/admin/blog' ? 'bg-white/20' : 'hover:bg-white/10'}`}
                 >
                   Blog
                 </Link>
-                <Link 
-                  to="/admin/bulletin" 
+                <Link
+                  to="/admin/bulletin"
                   className={`px-3 py-2 rounded-md ${location.pathname === '/admin/bulletin' ? 'bg-white/20' : 'hover:bg-white/10'}`}
                 >
                   Announcements
                 </Link>
-                <Link 
-                  to="/admin/testimonials" 
+                <Link
+                  to="/admin/testimonials"
                   className={`px-3 py-2 rounded-md ${location.pathname === '/admin/testimonials' ? 'bg-white/20' : 'hover:bg-white/10'}`}
                 >
                   Testimonials
                 </Link>
-                <Link 
-                  to="/admin/settings" 
+                <Link
+                  to="/admin/settings"
                   className={`px-3 py-2 rounded-md ${location.pathname === '/admin/settings' ? 'bg-white/20' : 'hover:bg-white/10'}`}
                 >
                   Settings
                 </Link>
               </div>
             </div>
-            
+
             <button
               onClick={handleLogout}
               className="px-4 py-2 bg-destructive hover:bg-destructive/80 rounded-md transition-colors"
